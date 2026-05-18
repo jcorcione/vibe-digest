@@ -1,0 +1,14 @@
+node_modules/
+out/
+out-test/
+*.vsix
+python/.venv/
+python/__pycache__/
+python/tests/__pycache__/
+**/__pycache__/
+*.pyc
+.env
+.DS_Store
+*.log
+coverage/
+.vscode-test/
