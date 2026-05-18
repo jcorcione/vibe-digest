@@ -5,6 +5,7 @@ Tests for digest.py
 from __future__ import annotations
 
 import os
+import pathlib
 import sys
 import textwrap
 import types
@@ -71,7 +72,7 @@ def test_export_pdf_requires_pro() -> None:
 # test_export_pdf_creates_file  (sanity check when a key IS provided)
 # ---------------------------------------------------------------------------
 
-def test_export_pdf_creates_file(tmp_path: pytest.fixture) -> None:  # type: ignore[valid-type]
+def test_export_pdf_creates_file(tmp_path: pathlib.Path) -> None:
     """export_pdf should write a PDF file and print its path to stdout."""
     # Write a minimal markdown file
     md_file = tmp_path / "newsletter-digest.md"
@@ -107,7 +108,7 @@ def test_export_pdf_creates_file(tmp_path: pytest.fixture) -> None:  # type: ign
 # test_export_pdf_cli_with_license_key
 # ---------------------------------------------------------------------------
 
-def test_export_pdf_cli_with_license_key(tmp_path: pytest.fixture) -> None:  # type: ignore[valid-type]
+def test_export_pdf_cli_with_license_key(tmp_path: pathlib.Path) -> None:
     """CLI --export-pdf with a valid license key should call export_pdf."""
     md_file = tmp_path / "newsletter-digest.md"
     md_file.write_text("# Digest\nContent here.")
