@@ -10,6 +10,8 @@ jobs:
   node:
     name: TypeScript Build & Jest
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -31,6 +33,8 @@ jobs:
   python:
     name: Python PyTest
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -54,6 +58,8 @@ jobs:
     name: VSIX Package (dry run)
     runs-on: ubuntu-latest
     needs: [node, python]
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
