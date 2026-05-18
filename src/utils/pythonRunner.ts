@@ -60,6 +60,57 @@ export async function runPythonDigest(
   });
 }
 
+/**
+ * Spawns digest.py with --export-pdf to convert the workspace digest markdown
+ * to a PDF.  Resolves with the path to the generated PDF file.
+ */
+export function runPythonExport(
+  extensionPath: string,
+  workspaceFolder: string,
+  licenseKey: string
+): Promise<string> {
+  const pythonDir = path.join(extensionPath, 'python');
+  const venvDir = path.join(pythonDir, '.venv');
+  const isWin = os.platform() === 'win32';
+  const pythonBin = isWin
+    ? path.join(venvDir, 'Scripts', 'python.exe')
+    : path.join(venvDir, 'bin', 'python');
+
+  const scriptPath = path.join(pythonDir, 'digest.py');
+
+  return new Promise((resolve, reject) => {
+    const args = [
+      scriptPath,
+      '--export-pdf',
+      '--workspace', workspaceFolder,
+      '--license', licenseKey,
+    ];
+
+    const proc = spawn(pythonBin, args, { cwd: pythonDir });
+
+    let stdout = '';
+    let stderr = '';
+
+    proc.stdout.on('data', (data: Buffer) => { stdout += data.toString(); });
+    proc.stderr.on('data', (data: Buffer) => { stderr += data.toString(); });
+
+    proc.on('close', (code: number) => {
+      if (code !== 0) {
+        reject(new Error(stderr.trim() || `digest.py exited with code ${code}`));
+        return;
+      }
+      const pdfPath = stdout.trim();
+      if (!pdfPath) {
+        reject(new Error('digest.py did not print a PDF path'));
+        return;
+      }
+      resolve(pdfPath);
+    });
+
+    proc.on('error', (err: Error) => reject(err));
+  });
+}
+
 function bootstrapVenv(pythonDir: string, venvDir: string, isWin: boolean): Promise<void> {
   return new Promise((resolve, reject) => {
     const proc = spawn('python3', ['-m', 'venv', venvDir], { cwd: pythonDir });

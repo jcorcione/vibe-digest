@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { runPythonDigest } from './utils/pythonRunner';
+import { runPythonDigest, runPythonExport } from './utils/pythonRunner';
 import { parseCronToMs } from './utils/cronHelper';
 
 let autoRunTimer: NodeJS.Timeout | undefined;
@@ -13,7 +13,35 @@ export function activate(context: vscode.ExtensionContext) {
     await runDigest(context);
   });
 
+  const exportPdfCmd = vscode.commands.registerCommand('newsletter.exportPdf', async () => {
+    const config = vscode.workspace.getConfiguration('vibeDigest');
+    const licenseKey: string = (config.get<string>('licenseKey') || '').trim();
+
+    if (!licenseKey) {
+      vscode.window.showErrorMessage(
+        'PDF export is a Pro feature. Add your license key in settings.'
+      );
+      return;
+    }
+
+    const folders = vscode.workspace.workspaceFolders;
+    if (!folders || folders.length === 0) {
+      vscode.window.showErrorMessage('Vibe Digest: No workspace folder open.');
+      return;
+    }
+
+    const workspaceFolder = folders[0].uri.fsPath;
+
+    try {
+      const pdfPath = await runPythonExport(context.extensionPath, workspaceFolder, licenseKey);
+      await vscode.env.openExternal(vscode.Uri.file(pdfPath));
+    } catch (err: any) {
+      vscode.window.showErrorMessage(`PDF export failed: ${err.message}`);
+    }
+  });
+
   context.subscriptions.push(disposable);
+  context.subscriptions.push(exportPdfCmd);
 
   // Set up auto-run if configured
   setupAutoRun(context);

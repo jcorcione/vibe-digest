@@ -187,16 +187,89 @@ def build_markdown(gmail_items: list[dict], rss_items: list[dict], is_pro: bool)
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def main():
+def export_pdf(md_path: str, output_path: str) -> None:
+    """Convert *md_path* (Markdown) to a PDF written at *output_path*.
+
+    Requires the ``markdown`` and ``weasyprint`` packages (see requirements.txt).
+    """
+    import markdown as md_lib  # type: ignore[import-untyped]
+    from weasyprint import HTML  # type: ignore[import-untyped]
+
+    with open(md_path, "r", encoding="utf-8") as fh:
+        md_text = fh.read()
+
+    body_html = md_lib.markdown(md_text, extensions=["extra", "toc"])
+
+    full_html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Vibe Digest</title>
+  <style>
+    body {{
+      font-family: Georgia, 'Times New Roman', serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      line-height: 1.6;
+      color: #222;
+    }}
+    h1, h2, h3, h4 {{
+      font-family: Arial, Helvetica, sans-serif;
+      color: #111;
+    }}
+    pre, code {{
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }}
+    pre {{ padding: 12px; overflow-x: auto; }}
+    a {{ color: #0057b8; }}
+  </style>
+</head>
+<body>
+{body_html}
+</body>
+</html>"""
+
+    HTML(string=full_html).write_pdf(output_path)
+    print(output_path)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Vibe Digest — newsletter aggregator")
     parser.add_argument("--workspace", required=True, help="Workspace folder path")
     parser.add_argument("--rss", default="[]", help="JSON array of RSS URLs")
     parser.add_argument("--license", default="", help="Pro license key")
-    args = parser.parse_args()
+    parser.add_argument(
+        "--export-pdf",
+        action="store_true",
+        dest="export_pdf",
+        help="(Pro) Export the digest as a PDF file",
+    )
+    args = parser.parse_args(argv)
 
     workspace = Path(args.workspace)
+    license_key: str = args.license.strip()
+
+    if args.export_pdf:
+        if not license_key:
+            print(
+                "PDF export is a Pro feature. Add your license key in settings.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        md_path = str(workspace / "newsletter-digest.md")
+        output_path = str(workspace / "newsletter-digest.pdf")
+        export_pdf(md_path, output_path)
+        return
+
     rss_urls: list[str] = json.loads(args.rss)
-    is_pro = bool(args.license)  # Simple flag check; extend with real validation
+    is_pro = bool(license_key)  # Simple flag check; extend with real validation
 
     # Gmail
     gmail_items = []
@@ -211,11 +284,11 @@ def main():
 
     # Build + write markdown
     md_content = build_markdown(gmail_items, rss_items, is_pro)
-    output_path = workspace / "newsletter-digest.md"
-    output_path.write_text(md_content, encoding="utf-8")
+    output_path = str(workspace / "newsletter-digest.md")
+    Path(output_path).write_text(md_content, encoding="utf-8")
 
     # Print path to stdout for the TS layer
-    print(str(output_path))
+    print(output_path)
 
 
 if __name__ == "__main__":

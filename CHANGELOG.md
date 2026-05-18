@@ -7,8 +7,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- **PDF export (Pro feature):** New command `newsletter.exportPdf` ("Export Digest as PDF") with keybinding `Ctrl+Alt+P` (`Cmd+Alt+P` on Mac). Converts the workspace digest Markdown to a styled PDF using `markdown` and `weasyprint`. Requires a valid `vibeDigest.licenseKey` in settings.
+
 ### Planned
-- PDF export (Pro)
 - Multi-Gmail account support (Pro)
 - Slack webhook integration (Pro)
 - Custom digest templates (Pro)

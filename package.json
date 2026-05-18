@@ -15,6 +15,10 @@
       {
         "command": "newsletter.digest",
         "title": "Generate Newsletter Digest"
+      },
+      {
+        "command": "newsletter.exportPdf",
+        "title": "Export Digest as PDF"
       }
     ],
     "keybindings": [
@@ -23,6 +27,11 @@
         "key": "ctrl+alt+n",
         "mac": "cmd+alt+n",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "newsletter.exportPdf",
+        "key": "ctrl+alt+p",
+        "mac": "cmd+alt+p"
       }
     ],
     "configuration": {
