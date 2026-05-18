@@ -1,16 +1,33 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to Vibe Digest are documented here.
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+---
 
 ## [Unreleased]
 
 ### Added
 - **PDF export (Pro feature):** New command `newsletter.exportPdf` ("Export Digest as PDF") with keybinding `Ctrl+Alt+P` (`Cmd+Alt+P` on Mac). Converts the workspace digest Markdown to a styled PDF using `markdown` and `weasyprint`. Requires a valid `vibeDigest.licenseKey` in settings.
 
-## [0.1.0] - 2026-05-18
+### Planned
+- Multi-Gmail account support (Pro)
+- Slack webhook integration (Pro)
+- Custom digest templates (Pro)
+
+---
+
+## [0.1.0] — 2026-05-18
 
 ### Added
-- Initial extension scaffold (digest generation, Pro license-key check).
+- Initial release 🎉
+- Gmail OAuth integration (label:newsletter, newer_than:1d)
+- RSS feed support via `vibeDigest.rssUrls` setting
+- HTML → Markdown extraction (BeautifulSoup + markdownify)
+- `Ctrl+Alt+N` keyboard shortcut to trigger digest
+- Auto-run scheduling via cron expression (`vibeDigest.autoRun` + `vibeDigest.cron`)
+- Python venv auto-bootstrap on first activation
+- Pro license key stub (`vibeDigest.licenseKey`)
+- Jest tests for TypeScript utilities
+- PyTest suite for Python digest logic
+- README with OAuth setup guide and settings reference

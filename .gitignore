@@ -1,6 +1,26 @@
+# Node
 node_modules/
 out/
-__pycache__/
-*.pyc
-.vscode-test/
 *.vsix
+.vscode-test/
+
+# Python
+python/.venv/
+python/__pycache__/
+python/**/__pycache__/
+__pycache__/
+tests/__pycache__/
+*.pyc
+*.pyo
+.env
+
+# OAuth tokens (never commit these!)
+vibe-digest/token.json
+token.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/settings.json

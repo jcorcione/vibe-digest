@@ -1,22 +1,33 @@
 {
   "name": "vibe-digest",
   "displayName": "Vibe Digest",
-  "description": "Generates a newsletter-style digest of your vibe projects",
+  "description": "Fetches Gmail newsletters & RSS feeds and aggregates them into a markdown digest in your workspace.",
   "version": "0.1.0",
+  "publisher": "your-publisher-name",
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.92.0"
   },
   "categories": ["Other"],
-  "activationEvents": [],
+  "activationEvents": ["onCommand:newsletter.digest"],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
+      {
+        "command": "newsletter.digest",
+        "title": "Generate Newsletter Digest"
+      },
       {
         "command": "newsletter.exportPdf",
         "title": "Export Digest as PDF"
       }
     ],
     "keybindings": [
+      {
+        "command": "newsletter.digest",
+        "key": "ctrl+alt+n",
+        "mac": "cmd+alt+n",
+        "when": "editorTextFocus"
+      },
       {
         "command": "newsletter.exportPdf",
         "key": "ctrl+alt+p",
@@ -26,23 +37,46 @@
     "configuration": {
       "title": "Vibe Digest",
       "properties": {
+        "vibeDigest.rssUrls": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "List of RSS feed URLs to include in the digest."
+        },
+        "vibeDigest.autoRun": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically run the digest on a schedule."
+        },
+        "vibeDigest.cron": {
+          "type": "string",
+          "default": "0 8 * * *",
+          "description": "Cron expression for auto-run schedule (default: every day at 8am)."
+        },
         "vibeDigest.licenseKey": {
           "type": "string",
           "default": "",
-          "description": "Pro license key for Vibe Digest. Required for Pro features such as PDF export."
+          "description": "(Pro) License key for unlocking Pro features."
         }
       }
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "lint": "eslint src --ext ts"
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js && pytest python/tests/ -v",
+    "package": "vsce package",
+    "setup": "cd python && python -m venv .venv && .venv/bin/pip install -r requirements.txt"
   },
   "devDependencies": {
-    "@types/vscode": "^1.85.0",
-    "@types/node": "^20.0.0",
-    "typescript": "^5.3.0"
-  }
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.92.0",
+    "@vscode/test-electron": "^2.3.9",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.4.0",
+    "vsce": "^2.15.0"
+  },
+  "dependencies": {}
 }
