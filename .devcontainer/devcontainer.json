@@ -1,0 +1,26 @@
+{
+  "name": "Vibe Digest Dev",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    }
+  },
+  "postCreateCommand": "npm ci && npm run setup",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "./python/.venv/bin/python",
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "forwardPorts": [],
+  "remoteUser": "vscode"
+}
